@@ -1,0 +1,130 @@
+.submit{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    width:220px;
+    height:59px;
+    color:white;
+    background:blue;
+    border-radius:50px;
+    font-size:19px;
+    font-weight:700;
+    cursor:pointer;
+}
+
+.header{
+    display: flex;
+    flex-direction: column;
+    align-items:center;
+    gap:9px;
+    width:100%;
+    margin-top: 30px;
+}
+.text{
+    font-size:48px;
+    font-weight:700;
+}
+.underline{
+    width:61px;
+    height:6px;
+    background:blue;
+    border-radius:9px;
+}
+.inputs{
+    margin-top:55px;
+    display:flex;
+    flex-direction:column;
+    gap:25px;
+}
+.input{
+    display:flex;
+    align-items:center;
+    margin:auto;
+    width:480px;
+    height:80px;
+    background:#eaeaea;
+    border-radius:6px;
+
+}
+.input input{
+    height:50px;
+    width:400px;
+    background:transparent;
+    border:none;
+    outline:none;
+    
+    font-size:19px;
+}
+
+.forgot-password{
+    padding-left:62px;
+    margin-top:27px;
+    color:#797979;
+    font-size:18px;
+}
+
+.forgot-password span{
+    color:blue;
+    cursor:pointer;
+}
+
+.signup-prompt{
+    padding-left:62px;
+    margin-top:27px;
+    color:#797979;
+    font-size:18px;
+}
+
+.signup-prompt span{
+    color:blue;
+    cursor:pointer;
+}
+.login-prompt span{
+    color:blue;
+    cursor:pointer;
+}
+
+.submit-container {
+    display: flex;
+    justify-content: center;
+    gap: 20px; /* Khoảng cách giữa các nút */
+    margin-top: 20px; /* Khoảng cách phía trên (tùy chọn) */
+  }
+  
+  .submit {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100px;
+    height: 50px;
+    color: white;
+    background-color: blue;
+    border-radius: 25px;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+  }
+  
+  .submit.gray {
+    background-color: gray;
+  }
+  .reset-password-modal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+  }
+  
+  .close-modal {
+    margin-top: 10px;
+    cursor: pointer;
+    color: blue;
+    text-align: center;
+  }
+
+  

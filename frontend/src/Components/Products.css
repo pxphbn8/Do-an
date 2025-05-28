@@ -1,0 +1,27 @@
+/* Đảm bảo các phần tử trong phần buttons không bị chồng lên nhau */
+.buttons button {
+    margin-right: 10px; /* Khoảng cách giữa các nút */
+  }
+  
+  /* Đảm bảo ô tìm kiếm không quá gần với các nút */
+  .search-container {
+    margin-top: 20px;  /* Tạo khoảng cách giữa ô tìm kiếm và các nút */
+    width: 100%;  /* Chiếm toàn bộ chiều rộng */
+  }
+  .main-content {
+    margin-top: 60px; /* Điều chỉnh theo chiều cao header */
+  }
+  /* Tạo khoảng cách giữa thanh tìm kiếm và các nút lọc */
+  .search-input {
+    margin-left: 0px; /* Tạo khoảng cách bên trái cho thanh tìm kiếm */
+    width: 30px;  /* Thiết lập chiều rộng cho ô tìm kiếm */
+  }
+  .sort-options{
+    margin-left: 0px;
+    width: 30px;
+  }
+  .form-select{
+    margin-left: 0px;
+    width: 30px;
+  }
+  

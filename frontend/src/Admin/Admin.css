@@ -1,0 +1,49 @@
+/* Full-screen background styling */
+.admin-container {
+    min-height: 100vh;
+    width: 80vw; 
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-image: url('../../src/Components/assets/giaodien.jpg'); /* Update with your image path */
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+    color: #fff; /* White text color for better contrast */
+   
+  }
+  
+/* Heading styling */
+.admin-container h1 {
+    color: #fff;
+    font-size: 48px!important;  /* Tăng kích thước font */
+    font-weight: bold;  /* Làm đậm chữ */
+    text-align: center; /* Căn giữa tiêu đề */
+    margin-bottom: 30px; /* Khoảng cách dưới */
+  }
+  
+  
+  /* Admin actions button container */
+  .admin-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+  }
+  
+  /* Button styling */
+  .admin-actions button {
+    padding: 12px 20px;
+    font-size: 18px;
+    background-color: rgba(0, 123, 255, 0.8);
+    border: none;
+    border-radius: 5px;
+    color: #fff;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .admin-actions button:hover {
+    background-color: rgba(0, 123, 255, 1);
+  }
+  

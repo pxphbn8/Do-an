@@ -1,0 +1,25 @@
+.navbar-header {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 1000;
+    background-color: #f8f9fa; 
+    left:0;
+  }
+  .main-content {
+    margin-top: 80px; /* Điều chỉnh khoảng cách tùy theo chiều cao của header */
+  }
+  
+  .container {
+    padding-top: 0px; /* Đẩy nội dung xuống để không bị navbar che mất */
+  }
+  
+  .navbar .navbar-brand {
+    font-weight: bold;
+    font-size: 1.5rem;
+  }
+  
+  .buttons a {
+    margin-left: 10px;
+  }
+  

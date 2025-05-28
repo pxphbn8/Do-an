@@ -1,0 +1,9 @@
+.product-desc,root,container {
+  white-space: pre;
+  font-size: 1.1rem;
+  line-height: 1.6;
+  width: 100%;
+  max-width: 100%;     /* Không bị giới hạn chiều ngang */
+  word-break: break-word; /* Tự xuống dòng nếu từ quá dài */
+  margin-top: 20px;
+}

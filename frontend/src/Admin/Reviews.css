@@ -1,0 +1,85 @@
+.reviews-page {
+    padding: 20px;
+    font-family: Arial, sans-serif;
+    background-color: #f9f9f9;
+  }
+  
+  .reviews-page h2 {
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 24px;
+  }
+
+  
+  .reviews-page ul {
+    list-style-type: none;
+    padding: 0;
+  }
+  
+  .reviews-page li {
+    background-color: #fff;
+    padding: 15px;
+    margin-bottom: 10px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .reviews-page li p {
+    margin: 5px 0;
+    font-size: 16px;
+  }
+  
+  .reviews-page li strong {
+    font-weight: bold;
+    color: #333;
+  }
+  
+  .reviews-page p {
+    color: #555;
+  }
+  
+  .error-message {
+    color: red;
+    text-align: center;
+    font-size: 16px;
+  }
+  
+  .no-reviews {
+    text-align: center;
+    font-size: 18px;
+    color: #888;
+  }
+  
+  .close-btn {
+    text-decoration: none;
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background-color: transparent;
+    font-size: 20px;
+    cursor: pointer;
+  }
+  
+  .close-btn:hover {
+    color: red;
+  }
+  .header1 {
+  position: fixed; /* hoặc sticky */
+  top: 0;
+  left: 0;
+  margin: 0;
+  width: 100%;
+  background-color: white; /* nền trắng để không bị mờ khi cuộn */
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 20px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  z-index: 1000; /* ưu tiên hiển thị trên */
+}
+
+
+.reviews-container {
+  margin-top: 60px; /* tạo khoảng cách tránh bị che bởi header */
+  padding: 0 20px;
+}
