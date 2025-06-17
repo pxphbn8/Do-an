@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import ForgotPassword from '../ForgotPassword';
 import './LoginSignup.css';
 import { GoogleLogin } from '@react-oauth/google';
-import jwt_decode from 'jwt-decode';
+import {jwtDecode} from "jwt-decode";
 
 const LoginSignup = () => {
   const navigate = useNavigate();
@@ -37,6 +37,7 @@ const LoginSignup = () => {
     } else {
       setErrors({});
       const newUser = { username, email, password, role };
+       console.log(" Dữ liệu gửi lên backend:", newUser);
       const existingUsers = JSON.parse(localStorage.getItem("users")) || [];
       existingUsers.push(newUser);
       localStorage.setItem("users", JSON.stringify(existingUsers));
@@ -71,6 +72,11 @@ const LoginSignup = () => {
         const userFound = users.find(
           (user) => user.email === email && user.password === password
         );
+//         if (userFound && !userFound.isVerified) {
+//   alert("Tài khoản chưa được xác minh. Vui lòng kiểm tra email.");
+//   return;
+// }
+
         if (userFound) {
           localStorage.setItem("user", JSON.stringify(userFound));
           if (userFound.role === "Admin") {
@@ -89,37 +95,24 @@ const LoginSignup = () => {
   };
 
   const handleGoogleSuccess = async (credentialResponse) => {
-    try {
-      const decoded = jwt_decode(credentialResponse.credential);
-      const { email, name } = decoded;
+  try {
+    const decoded = jwtDecode(credentialResponse.credential);
+    const { email, name } = decoded;
 
-      const res = await fetch("http://localhost:3000/tk");
-      const users = await res.json();
-      let user = users.find((u) => u.email === email);
+    const res = await fetch("http://localhost:3000/google", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ token: credentialResponse.credential })
+    });
 
-      if (!user) {
-        const newUser = {
-          username: name,
-          email,
-          password: "", // Không cần
-          role: "User"
-        };
-        await fetch("http://localhost:3000/tk", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(newUser)
-        });
-        user = newUser;
-      }
-
-      localStorage.setItem("user", JSON.stringify(user));
-      localStorage.setItem("isLoggedIn", "true");
-      navigate('/Home');
-    } catch (err) {
-      console.error("Lỗi Google login:", err);
-    }
-  };
-
+    const result = await res.json();
+    localStorage.setItem("user", JSON.stringify(result.user));
+    localStorage.setItem("isLoggedIn", "true");
+    navigate("/Home");
+  } catch (err) {
+    console.error("Lỗi Google login:", err);
+  }
+};
   return (
     <div className="container">
       <div className="header">

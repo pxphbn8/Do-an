@@ -129,7 +129,6 @@ const ProductEdit = () => {
             />
           </div>
 
-          {/* Nhập link ảnh */}
           <div className="mb-3">
             <label>Image URL</label>
             <input
@@ -144,7 +143,6 @@ const ProductEdit = () => {
             />
           </div>
 
-          {/* Hoặc upload ảnh từ máy */}
           <div className="mb-3">
             <label>Upload Image from Device</label>
             <input
@@ -155,7 +153,6 @@ const ProductEdit = () => {
             />
           </div>
 
-          {/* Hiển thị ảnh preview */}
           {product.img && (
             <div className="mb-3">
               <img

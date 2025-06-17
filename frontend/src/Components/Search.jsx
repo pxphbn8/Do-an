@@ -6,7 +6,7 @@ function Search({ setFilteredData }) {
   useEffect(() => {
     const fetchResults = async () => {
       if (!query.trim()) {
-        setFilteredData(null); // Nếu không có query thì hiển thị tất cả
+        setFilteredData(null); 
         return;
       }
 
@@ -15,10 +15,10 @@ function Search({ setFilteredData }) {
         const result = await response.json();
 
         if (Array.isArray(result)) {
-          setFilteredData(result); // ✅ Nếu đúng là mảng, set bình thường
+          setFilteredData(result); 
         } else {
-          console.error("Expected array but got:", result); // ❌ Nếu sai kiểu, log ra để debug
-          setFilteredData([]); // hoặc có thể hiển thị thông báo "Không tìm thấy"
+          console.error("Expected array but got:", result); 
+          setFilteredData([]); 
         }
       } catch (error) {
         console.error("Search API failed:", error);

@@ -5,7 +5,7 @@ import Danhgia from './Danhgia';
 const Trangcapnhat = () => {
   const { orderId } = useParams();
   const [shippingStatus, setShippingStatus] = useState("Chờ Xác Nhận");
-  const [orderDetails, setOrderDetails] = useState(null); // Lưu trữ thông tin chi tiết đơn hàng
+  const [orderDetails, setOrderDetails] = useState(null); 
 console.log(orderId)
   useEffect(() => {
     const fetchOrderStatus = async () => {
@@ -38,7 +38,7 @@ console.log(orderId)
       ) : shippingStatus === "Đã Giao Hàng" ? (
         <>
           <p>Cảm ơn bạn đã mua hàng! Đơn hàng của bạn đã được giao thành công.</p>
-          {orderDetails && <Danhgia orderDetails={orderDetails} />} {/* Truyền thông tin đơn hàng vào Danhgia */}
+          {orderDetails && <Danhgia orderDetails={orderDetails} />} 
         </>
       ) : (
         <p>Chúng tôi sẽ cập nhật trạng thái tiếp theo sớm nhất.</p>

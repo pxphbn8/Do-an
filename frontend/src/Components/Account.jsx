@@ -54,13 +54,6 @@ function Account() {
     }
   };
 
-  // const handleLogout = () => {
-  //   localStorage.removeItem("user");
-  //    localStorage.removeItem("isLoggedIn");
-  //   setUser(null);
-  //   navigate('/LoginSignup');
-  // };
-
   const cancel=()=>{
     navigate('/Home');
   }

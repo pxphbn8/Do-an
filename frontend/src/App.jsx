@@ -26,12 +26,14 @@ import AcountAdmin from './Admin/AcountAdmin';
 import Reviews from './Admin/Reviews';
 import Income from './Admin/Income';
 // import Contact from './Components/Contact.jsx';
+import VerifyEmail from './Components/VerifyEmail';
 
 function App() {
   return (
     <>
       <Page />
       <Routes>
+        <Route path="/" element={<Home />} />
         <Route path="Income" element={<Income />} />
         <Route path="Reviews" element={<Reviews />} />
         <Route path="AcountAdmin" element={<AcountAdmin />} />
@@ -54,6 +56,7 @@ function App() {
         <Route path="/Trangcapnhat/:orderId" element={<Trangcapnhat />} />
         <Route path="/Danhgia" element={<Danhgia />} />
         {/* <Route path="/Contact" element={<Contact/>}/> */}
+         <Route path="/verify-email" element={<VerifyEmail />} />
       </Routes>
     </>
   );

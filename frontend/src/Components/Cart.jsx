@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { NavLink } from "react-router-dom";
 import { useSelector, useDispatch } from 'react-redux';
 import { setCartFromServer, addCart, delCart } from '../redux/action';
@@ -7,7 +7,8 @@ import axios from 'axios';
 const Cart = () => {
   const cartItemsRedux = useSelector(state => state.handleCart);
   const dispatch = useDispatch();
-  const token = localStorage.getItem('token');  
+  const token = localStorage.getItem('token');
+  const didMountRef = useRef(false); // để ngăn useEffect gọi khi lần đầu
 
   useEffect(() => {
     const fetchCart = async () => {
@@ -17,7 +18,6 @@ const Cart = () => {
           headers: { Authorization: `Bearer ${token}` }
         });
         if (res.data.products) {
-          // Đồng bộ redux với toàn bộ giỏ hàng lấy từ backend
           dispatch(setCartFromServer(res.data.products));
         }
       } catch (err) {
@@ -27,13 +27,18 @@ const Cart = () => {
     fetchCart();
   }, [dispatch, token]);
 
-  // Khi cartItemsRedux thay đổi, cập nhật backend
+  // Đồng bộ cart redux -> backend (chỉ sau lần đầu)
   useEffect(() => {
+    if (!didMountRef.current) {
+      didMountRef.current = true;
+      return;
+    }
+
     const updateBackendCart = async () => {
       if (!token) return;
       try {
-        await axios.put('http://localhost:3000/cart', 
-          { products: cartItemsRedux }, 
+        await axios.put('http://localhost:3000/cart',
+          { products: cartItemsRedux },
           { headers: { Authorization: `Bearer ${token}` } }
         );
       } catch (err) {
@@ -54,36 +59,42 @@ const Cart = () => {
     dispatch(delCart(product));
   };
 
+  const formatCurrency = (amount) => {
+    return amount.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
+  };
+
   const calculateTotal = () => {
     return cartItemsRedux.reduce((total, product) => total + product.qty * product.price, 0);
   };
 
   return (
-    <div>
+    <div className="container mt-4">
       <div className="row">
         {cartItemsRedux.length === 0 ? (
-          <h3>Your cart is empty.</h3>
+          <h3 className="text-center">Giỏ hàng của bạn trống.</h3>
         ) : (
           cartItemsRedux.map((product) => (
-            <div className="col-md-4" key={product.productId || product.id || product._id}>
-              <img src={product.img} alt={product.title} className="img-fluid" />
-              <div>
-                <h5 className="card-text">{product.title}</h5>
+            <div className="col-md-4 mb-4" key={product.productId || product.id || product._id}>
+              <div className="card h-100 p-3">
+                <img src={product.img} alt={product.title} className="img-fluid mb-2" />
+                <h5>{product.title}</h5>
                 <p className="lead fw-bold">
-                  {product.qty} X ${product.price} = ${product.qty * product.price}
+                  {product.qty} x {formatCurrency(product.price)} = {formatCurrency(product.qty * product.price)}
                 </p>
-                <button
-                  className="btn btn-outline-dark me-4"
-                  onClick={() => handleRemove(product)}
-                >
-                  <i className="fa fa-minus"></i>
-                </button>
-                <button
-                  className="btn btn-outline-dark"
-                  onClick={() => handleAdd(product)}
-                >
-                  <i className="fa fa-plus"></i>
-                </button>
+                <div>
+                  <button
+                    className="btn btn-outline-dark me-2"
+                    onClick={() => handleRemove(product)}
+                  >
+                    <i className="fa fa-minus"></i>
+                  </button>
+                  <button
+                    className="btn btn-outline-dark"
+                    onClick={() => handleAdd(product)}
+                  >
+                    <i className="fa fa-plus"></i>
+                  </button>
+                </div>
               </div>
             </div>
           ))
@@ -91,15 +102,13 @@ const Cart = () => {
       </div>
 
       {cartItemsRedux.length > 0 && (
-        <div className="mt-4">
-          <h4>Total Price: ${calculateTotal()}</h4>
+        <div className="mt-4 text-end">
+          <h4>Tổng tiền: {formatCurrency(calculateTotal())}</h4>
+          <NavLink to="/Thanhtoan" className="btn btn-dark mt-3">
+            <i className="fa fa-credit-card me-2"></i> Thanh toán
+          </NavLink>
         </div>
       )}
-      <div className="buttons ms-2">
-        <NavLink to="/Thanhtoan" className="btn btn-outline-dark">
-          <i className="fa fa-user me-1"></i> Thanhtoan
-        </NavLink>
-      </div>
     </div>
   );
 };

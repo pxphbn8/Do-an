@@ -44,16 +44,6 @@ const ProductCreate = () => {
     <div className="product-create-container">
       <h1>Create New Product</h1>
       <form onSubmit={handleSubmit}>
-      {/* <div className="mb-3">
-          <label>ID</label>
-          <input
-            type="text"
-            className="form-control"
-            value={id}
-            onChange={(e) => setId(e.target.value)}
-            required
-          />
-        </div> */}
         <div className="mb-3">
           <label>Title</label>
           <input

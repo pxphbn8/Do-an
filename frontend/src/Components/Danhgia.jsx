@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom"; // <-- thêm useNavigate
+import { useNavigate } from "react-router-dom"; 
 import "./Danhgia.css";
 
 const Danhgia = ({ orderDetails }) => {
@@ -9,7 +9,7 @@ const Danhgia = ({ orderDetails }) => {
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState("");
   const [submitTime, setSubmitTime] = useState(null);
-  const navigate = useNavigate(); // <-- khởi tạo useNavigate
+  const navigate = useNavigate(); 
 
   useEffect(() => {
     if (orderDetails) {
@@ -30,7 +30,7 @@ const Danhgia = ({ orderDetails }) => {
   };
 
   const handleCancel = () => {
-    navigate("/Home"); // <-- điều hướng về Home
+    navigate("/Home"); 
   };
 
   const handleSubmit = async (event) => {

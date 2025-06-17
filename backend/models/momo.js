@@ -14,4 +14,4 @@ const momo = new mongoose.Schema({
 });
 
 const MomoTransaction = mongoose.model('MomoTransaction', momo);
-export default momo;
+export default MomoTransaction;

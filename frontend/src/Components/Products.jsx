@@ -83,7 +83,7 @@ function Products() {
             <img src={product.img} className="card-img-top" alt={product.title} />
             <div className="card-body">
               <h5 className="card-text">{product.title}</h5>
-              <p className="card-text">VND{product.price}</p>
+              <p className="card-text">${product.price}</p>
               <p className="card-text">Quantity: {product.quantity}</p>
               <NavLink to={`/products/${product._id}`} className="btn btn-primary">Detail</NavLink>
             </div>

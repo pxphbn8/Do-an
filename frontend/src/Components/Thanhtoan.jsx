@@ -23,7 +23,12 @@ const Thanhtoan = () => {
   };
 
   const calculateTotal = () => {
-    return cartItems.reduce((total, product) => total + product.qty * product.price, 0);
+    const usdToVnd = 10;
+    const totalVnd = cartItems.reduce(
+      (total, product) => total + product.qty * product.price * usdToVnd,
+      0
+    );
+    return Math.max(1000, Math.round(totalVnd)); 
   };
 
   const handlePayment = async () => {
@@ -43,7 +48,7 @@ const Thanhtoan = () => {
       quantity: item.qty
     }));
 
-    const total = calculateTotal();
+    const total = calculateTotal(); // tính tổng VND
 
     if (paymentMethod === 'momo') {
       try {
@@ -166,7 +171,7 @@ const Thanhtoan = () => {
             </div>
           ))}
           <hr />
-          <h4>Tổng cộng: ${calculateTotal()}</h4>
+          <h4>Tổng cộng: {calculateTotal().toLocaleString('vi-VN')} VND</h4>
           <button className="btn btn-success mt-3" onClick={handlePayment}>
             Xác nhận thanh toán
           </button>
@@ -175,5 +180,4 @@ const Thanhtoan = () => {
     </div>
   );
 };
-
 export default Thanhtoan;
