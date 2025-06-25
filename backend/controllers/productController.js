@@ -47,14 +47,14 @@ export const createProduct = async (req, res) => {
   try {
     console.log("Received body:", req.body); 
 
-    const { title, quantity, price, category, img } = req.body;
+    const { title, quantity, price, category, desc, img } = req.body;
 
 
     if (!title || !price || !category) {
       return res.status(400).json({ message: 'Missing required fields' });
     }
 
-    const newProduct = new Product({ title, quantity, price, category, img });
+    const newProduct = new Product({ title, quantity, price, category,desc, img });
     const savedProduct = await newProduct.save();
 
     res.status(201).json(savedProduct);

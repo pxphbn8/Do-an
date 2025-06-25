@@ -2,7 +2,7 @@ import Account from '../models/Account.js';
 import crypto from 'crypto';
 import { OAuth2Client } from 'google-auth-library';
 import nodemailer from 'nodemailer';
-
+import jwt from 'jsonwebtoken';
 
 export const createAccount = async (req, res) => {
   try {
@@ -10,8 +10,8 @@ export const createAccount = async (req, res) => {
     const existing = await Account.findOne({ email });
     if (existing) return res.status(400).json({ message: "Email đã tồn tại" });
 
-    // const token = crypto.randomBytes(32).toString('hex');
-    // const verifyTokenExpires = Date.now() + 3600000;
+    const token = crypto.randomBytes(32).toString('hex');
+    const verifyTokenExpires = Date.now() + 3600000;
 
     const newAccount = new Account({
       username,
@@ -20,39 +20,40 @@ export const createAccount = async (req, res) => {
       role,
       verifyToken: token,
       verifyTokenExpires,
-      isVerified: false
+       isVerified: false,
     });
-    // await newAccount.save();
+    await newAccount.save();
 
-    // const verifyLink = `http://localhost:5173/verify-email?token=${token}`;
+    const verifyLink = `http://localhost:3000/verify-email?token=${token}`;
 
-    // const transporter = nodemailer.createTransport({
-    //   host: "smtp.gmail.com",
-    //   port: 587,
-    //   secure: false,
-    //   auth: {
-    //     user: process.env.EMAIL_SENDER,
-    //     pass: process.env.EMAIL_PASSWORD,
-    //   },
-    // });
 
-    // const mailOptions = {
-    //   from: process.env.EMAIL_SENDER,
-    //   to: email,
-    //   subject: "Xác thực tài khoản của bạn",
-    //   html: `<p>Chào ${username},</p>
-    //          <p>Vui lòng nhấn vào liên kết dưới đây để xác thực tài khoản:</p>
-    //          <a href="${verifyLink}">${verifyLink}</a>
-    //          <p>Liên kết này có hiệu lực trong 1 giờ.</p>`,
-    // };
+    const transporter = nodemailer.createTransport({
+      host: "smtp.gmail.com",
+      port: 587,
+      secure: false,
+      auth: {
+        user: process.env.EMAIL_SENDER,
+        pass: process.env.EMAIL_PASSWORD,
+      },
+    });
 
-    // try {
-    //   await transporter.sendMail(mailOptions);
-    //   console.log("Email xác thực đã gửi tới", email);
-    // } catch (err) {
-    //   console.error("Lỗi gửi email xác thực:", err);
-    //   return res.status(500).json({ message: "Không gửi được email xác thực", error: err.message });
-    // }
+    const mailOptions = {
+      from: process.env.EMAIL_SENDER,
+      to: email,
+      subject: "Xác thực tài khoản của bạn",
+      html: `<p>Chào ${username},</p>
+             <p>Vui lòng nhấn vào liên kết dưới đây để xác thực tài khoản:</p>
+             <a href="${verifyLink}">${verifyLink}</a>
+             <p>Liên kết này có hiệu lực trong 1 giờ.</p>`,
+    };
+
+    try {
+      await transporter.sendMail(mailOptions);
+      console.log("Email xác thực đã gửi tới", email);
+    } catch (err) {
+      console.error("Lỗi gửi email xác thực:", err);
+      return res.status(500).json({ message: "Không gửi được email xác thực", error: err.message });
+    }
 
     res.status(201).json({ message: "Đăng ký thành công, vui lòng kiểm tra email để xác thực tài khoản" });
   } catch (error) {
@@ -159,9 +160,17 @@ export const handleGoogleLogin = async (req, res) => {
       await user.save();
     }
 
+     //  Tạo token từ user
+    const accessToken = jwt.sign(
+      { _id: user._id, email: user.email, role: user.role },
+      process.env.JWT_SECRET,
+      { expiresIn: '2h' }
+    );
+
     res.status(200).json({
       message: 'Google login thành công',
       user,
+      token: accessToken
     });
   } catch (error) {
     console.error('Lỗi xác minh Google token:', error);
@@ -187,5 +196,41 @@ export const verifyEmail = async (req, res) => {
     res.status(200).json({ message: "Xác minh tài khoản thành công" });
   } catch (err) {
     res.status(500).json({ message: "Lỗi server", error: err });
+  }
+};
+
+export const loginWithEmail = async (req, res) => {
+  const { email, password } = req.body;
+    console.log("Login attempt:", email, password);
+console.log('JWT_SECRET:', process.env.JWT_SECRET);
+
+  try {
+    const user = await Account.findOne({ email });
+
+    if (!user) {
+      return res.status(404).json({ message: 'Không tìm thấy tài khoản' });
+    }
+
+    if (!user.isVerified) {
+      return res.status(401).json({ message: 'Tài khoản chưa được xác minh email' });
+    }
+
+    if (user.password !== password) {
+      return res.status(401).json({ message: 'Sai mật khẩu' });
+    }
+
+    const token = jwt.sign(
+      { _id: user._id, email: user.email, role: user.role },
+      process.env.JWT_SECRET,
+      { expiresIn: '2h' }
+    );
+
+    res.status(200).json({
+      message: 'Đăng nhập thành công',
+      user,
+      token
+    });
+  } catch (err) {
+    res.status(500).json({ message: 'Lỗi server', error: err.message });
   }
 };

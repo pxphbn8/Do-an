@@ -1,4 +1,5 @@
 import Order from '../models/orderModel.js';
+import Product from '../models/Product.js';
 import mongoose from 'mongoose';
 
 export const createOrder = async (req, res) => {
@@ -63,7 +64,6 @@ export const getAllOrders = async (req, res) => {
   }
 };
 
-// Cập nhật trạng thái đơn hàng theo id
 export const updateOrderStatus = async (req, res) => {
   const { id } = req.params;  
   const { status } = req.body; 
@@ -73,15 +73,37 @@ export const updateOrderStatus = async (req, res) => {
   }
 
   try {
-    const order = await Order.findByIdAndUpdate(id, { status }, { new: true });
+    const order = await Order.findById(id).populate('products.productId');
 
     if (!order) {
       return res.status(404).json({ message: 'Order not found' });
     }
 
-    res.json(order);
+    order.status = status;
+
+    if (status === 'Đã giao hàng') {
+      for (const item of order.products) {
+        try {
+          const product = item.productId; 
+          if (product) {
+            console.log(`Sản phẩm trước khi giảm: ${product.title}, quantity=${product.quantity}, giảm: ${item.quantity}`);
+            product.quantity = Math.max(0, product.quantity - item.quantity);
+            await product.save();
+            const refreshed = await Product.findById(product._id);
+            console.log(`Sản phẩm sau khi giảm: quantity=${refreshed.quantity}`);
+          }
+        } catch (err) {
+          console.error(`Lỗi cập nhật tồn kho sản phẩm ${item.productId}:`, err);
+        }
+      }
+    }
+
+    const updatedOrder = await order.save();
+
+    res.json(updatedOrder);
+
   } catch (error) {
-    console.error('Error updating order status:', error.message);
+    console.error('Error updating order status:', error);
     res.status(500).json({ message: 'Failed to update order status', error: error.message });
   }
 };

@@ -1,80 +1,80 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useState } from 'react';
 import { NavLink } from "react-router-dom";
 import { useSelector, useDispatch } from 'react-redux';
-import { setCartFromServer, addCart, delCart } from '../redux/action';
+import { setCartFromServer } from '../redux/action';
 import axios from 'axios';
 
 const Cart = () => {
   const cartItemsRedux = useSelector(state => state.handleCart);
   const dispatch = useDispatch();
   const token = localStorage.getItem('token');
-  const didMountRef = useRef(false); // để ngăn useEffect gọi khi lần đầu
+  const [loading, setLoading] = useState(false);
 
+  // Lấy cart từ server
   useEffect(() => {
     const fetchCart = async () => {
       if (!token) return;
+
       try {
-        const res = await axios.get('http://localhost:3000/cart', {
+        setLoading(true);
+        const res = await axios.get('http://localhost:3000/api/cart', {
           headers: { Authorization: `Bearer ${token}` }
         });
         if (res.data.products) {
           dispatch(setCartFromServer(res.data.products));
         }
       } catch (err) {
-        console.error('Lấy giỏ hàng lỗi:', err);
+        console.error('Lỗi khi lấy cart:', err);
+      } finally {
+        setLoading(false);
       }
     };
+
     fetchCart();
   }, [dispatch, token]);
 
-  // Đồng bộ cart redux -> backend (chỉ sau lần đầu)
-  useEffect(() => {
-    if (!didMountRef.current) {
-      didMountRef.current = true;
-      return;
+  const handleAdd = async (product) => {
+    try {
+      const res = await axios.post(
+        'http://localhost:3000/api/cart/add',
+        { product },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      dispatch(setCartFromServer(res.data.products));
+    } catch (error) {
+      console.error('Lỗi thêm sản phẩm:', error);
     }
+  };
 
-    const updateBackendCart = async () => {
-      if (!token) return;
-      try {
-        await axios.put('http://localhost:3000/cart',
-          { products: cartItemsRedux },
-          { headers: { Authorization: `Bearer ${token}` } }
-        );
-      } catch (err) {
-        console.error('Cập nhật giỏ hàng lỗi:', err);
-      }
-    };
-
-    if (cartItemsRedux.length > 0) {
-      updateBackendCart();
+  const handleRemove = async (product) => {
+    try {
+      const productId = product.id || product.productId || product._id;
+      const res = await axios.delete(
+        `http://localhost:3000/api/cart/remove/${productId}`,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      dispatch(setCartFromServer(res.data.products));
+    } catch (error) {
+      console.error('Lỗi xóa sản phẩm:', error);
     }
-  }, [cartItemsRedux, token]);
-
-  const handleAdd = (product) => {
-    dispatch(addCart(product));
   };
 
-  const handleRemove = (product) => {
-    dispatch(delCart(product));
-  };
+  const formatCurrency = (amount) =>
+    amount.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
 
-  const formatCurrency = (amount) => {
-    return amount.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
-  };
-
-  const calculateTotal = () => {
-    return cartItemsRedux.reduce((total, product) => total + product.qty * product.price, 0);
-  };
+  const calculateTotal = () =>
+    cartItemsRedux.reduce((total, item) => total + item.qty * item.price, 0);
 
   return (
     <div className="container mt-4">
       <div className="row">
-        {cartItemsRedux.length === 0 ? (
+        {loading ? (
+          <h3 className="text-center">Đang tải giỏ hàng...</h3>
+        ) : cartItemsRedux.length === 0 ? (
           <h3 className="text-center">Giỏ hàng của bạn trống.</h3>
         ) : (
           cartItemsRedux.map((product) => (
-            <div className="col-md-4 mb-4" key={product.productId || product.id || product._id}>
+            <div className="col-md-4 mb-4" key={product.id || product.productId || product._id}>
               <div className="card h-100 p-3">
                 <img src={product.img} alt={product.title} className="img-fluid mb-2" />
                 <h5>{product.title}</h5>

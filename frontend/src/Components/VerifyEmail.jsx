@@ -5,12 +5,16 @@ import { useSearchParams } from 'react-router-dom';
 const VerifyEmail = () => {
   const [searchParams] = useSearchParams();
   const [message, setMessage] = useState('Đang xác minh...');
-  const token = searchParams.get('token');
+
+  // Lấy token từ query param, loại bỏ dấu " và khoảng trắng
+  const rawToken = searchParams.get('token');
+  const token = rawToken ? rawToken.replace(/"/g, '').trim() : null;
 
   useEffect(() => {
     const verify = async () => {
       try {
-        const res = await axios.get(`http://localhost:5000/api/accounts/verify-email?token=${token}`);
+        console.log('Token gửi lên API:', token);
+        const res = await axios.get(`http://localhost:3000/verify-email?token=${token}`);
         setMessage(res.data.message);
       } catch (err) {
         setMessage(err.response?.data?.message || 'Xác minh thất bại');

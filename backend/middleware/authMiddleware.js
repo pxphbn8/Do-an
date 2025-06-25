@@ -7,6 +7,7 @@ export const authenticateToken = (req, res, next) => {
 
   jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
     if (err) return res.status(403).json({ message: 'Token không hợp lệ' });
+    console.log('Decoded user from token:', user);
     req.user = user;  
     next();
   });

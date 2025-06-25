@@ -4,31 +4,27 @@ import { useNavigate, useLocation } from 'react-router-dom';
 
 const Thanhtoan = () => {
   const cartItems = useSelector((state) => state.handleCart);
-  const [shippingInfo, setShippingInfo] = useState({
-    name: '',
-    phone: '',
-    address: ''
-  });
+  const [shippingInfo, setShippingInfo] = useState({ name: '', phone: '', address: '' });
   const [paymentMethod, setPaymentMethod] = useState('cod');
   const [success, setSuccess] = useState(false);
-
   const navigate = useNavigate();
   const location = useLocation();
 
+  const buyNowProduct = JSON.parse(localStorage.getItem("buyNowProduct")); // 🆕 kiểm tra mua ngay
+
   const handleChange = (e) => {
-    setShippingInfo({
-      ...shippingInfo,
-      [e.target.name]: e.target.value
-    });
+    setShippingInfo({ ...shippingInfo, [e.target.name]: e.target.value });
   };
 
   const calculateTotal = () => {
     const usdToVnd = 10;
-    const totalVnd = cartItems.reduce(
-      (total, product) => total + product.qty * product.price * usdToVnd,
-      0
+    if (buyNowProduct) {
+      return Math.max(1000, Math.round(buyNowProduct.price * usdToVnd));
+    }
+    return Math.max(
+      1000,
+      Math.round(cartItems.reduce((total, item) => total + item.qty * item.price * usdToVnd, 0))
     );
-    return Math.max(1000, Math.round(totalVnd)); 
   };
 
   const handlePayment = async () => {
@@ -43,20 +39,14 @@ const Thanhtoan = () => {
       return;
     }
 
-    const products = cartItems.map((item) => ({
-      productId: item._id || item.id,
-      quantity: item.qty
-    }));
+    const total = calculateTotal();
 
-    const total = calculateTotal(); // tính tổng VND
-
+    // MoMo
     if (paymentMethod === 'momo') {
       try {
         const momoRes = await fetch('http://localhost:3000/api/momo-payment', {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             amount: total,
             orderId: `order-${Date.now()}`,
@@ -68,7 +58,7 @@ const Thanhtoan = () => {
 
         const momoData = await momoRes.json();
         if (momoData && momoData.payUrl) {
-          window.location.href = momoData.payUrl;
+          return (window.location.href = momoData.payUrl);
         } else {
           alert("Không thể khởi tạo thanh toán MoMo.");
         }
@@ -79,13 +69,21 @@ const Thanhtoan = () => {
       return;
     }
 
+    // Đơn hàng (COD hoặc Momo sau callback)
     try {
+      const products = buyNowProduct
+        ? [{ productId: buyNowProduct._id || buyNowProduct.id, quantity: 1 }]
+        : cartItems.map((item) => ({
+            productId: item.id,
+            quantity: item.qty,
+          }));
+
       const order = {
         userId: user._id,
         products,
         totalPrice: total,
         status: 'Chờ Xác Nhận',
-        shippingInfo
+        shippingInfo,
       };
 
       const response = await fetch('http://localhost:3000/orders', {
@@ -97,6 +95,7 @@ const Thanhtoan = () => {
       if (response.ok) {
         const savedOrder = await response.json();
         localStorage.setItem('buyerInfo', JSON.stringify(shippingInfo));
+        localStorage.removeItem("buyNowProduct"); // 🧹 xoá sản phẩm mua ngay sau khi thanh toán
         alert("Đặt hàng thành công!");
         navigate(`/Trangcapnhat/${savedOrder._id}`);
       } else {
@@ -160,10 +159,21 @@ const Thanhtoan = () => {
         </div>
       </div>
 
-      {cartItems.length === 0 ? (
+      {/* Danh sách sản phẩm */}
+      {buyNowProduct ? (
+        <>
+          <h5>{buyNowProduct.title}</h5>
+          <p>1 x {buyNowProduct.price} USD</p>
+          <hr />
+          <h4>Tổng cộng: {calculateTotal().toLocaleString('vi-VN')} VND</h4>
+          <button className="btn btn-success mt-3" onClick={handlePayment}>
+            Xác nhận thanh toán
+          </button>
+        </>
+      ) : cartItems.length === 0 ? (
         <h3>Giỏ hàng trống</h3>
       ) : (
-        <div>
+        <>
           {cartItems.map((product, index) => (
             <div key={product.id || `${product.title}-${index}`} className="mb-3">
               <h5>{product.title}</h5>
@@ -175,9 +185,10 @@ const Thanhtoan = () => {
           <button className="btn btn-success mt-3" onClick={handlePayment}>
             Xác nhận thanh toán
           </button>
-        </div>
+        </>
       )}
     </div>
   );
 };
+
 export default Thanhtoan;

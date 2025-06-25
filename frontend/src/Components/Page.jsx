@@ -23,7 +23,7 @@ useEffect(() => {
 
 useEffect(() => {
   // Danh sách route công khai không cần đăng nhập
-  const publicPaths = ['/LoginSignup', '/forgot-password', '/reset-password'];
+  const publicPaths = ['/LoginSignup', '/forgot-password', '/reset-password', '/verify-email'];
 
   // Nếu chưa đăng nhập và không phải route công khai thì redirect
   if (!user && !publicPaths.includes(location.pathname)) {
